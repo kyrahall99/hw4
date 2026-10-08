@@ -289,3 +289,9 @@ Put your code in a folder named hw4 and push it to a public GitHub repository. O
 And check to make sure this is the file layout:
 [two screenshots: expected file layout tree, and local-only data pack]
 ```
+
+**Prompt 2**
+
+```text
+Create my username "kyrahall99" and push to GitHub
+```
