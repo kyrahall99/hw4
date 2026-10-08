@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Campus Customs: App Check (Problem 11)</title>
+<style>
+  :root { --navy:#00356b; --deep:#0a1f3d; --gold:#c99a2e; --paper:#fffdf8; --muted:#5d6877; --border:#e3ddd0; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:#18202b; background:var(--paper); line-height:1.55; }
+  header { background:linear-gradient(135deg,var(--deep),var(--navy)); color:#fff; padding:2rem 1.5rem; border-bottom:5px solid var(--gold); }
+  header h1 { margin:0 0 .3rem; font-family: Georgia, serif; font-size:2rem; }
+  header p { margin:0; color:#dbe4f0; }
+  main { max-width:1100px; margin:0 auto; padding:1.5rem; }
+  .summary { width:100%; border-collapse:collapse; margin:1rem 0 2rem; background:#fff; }
+  .summary th, .summary td { border:1px solid var(--border); padding:.55rem .75rem; text-align:left; vertical-align:top; font-size:.95rem; }
+  .summary th { background:#f3efe6; }
+  .pass { color:#1a7f37; font-weight:700; }
+  section.check { background:#fff; border:1px solid var(--border); border-top:5px solid var(--navy); border-radius:12px; padding:1.4rem 1.5rem; margin:0 0 2rem; }
+  section.check h2 { margin:0 0 .3rem; font-family: Georgia, serif; color:var(--deep); }
+  .meta { color:var(--muted); font-size:.9rem; margin:0 0 1rem; }
+  figure { margin:1rem 0; }
+  figure img { width:100%; border:1px solid var(--border); border-radius:8px; box-shadow:0 8px 24px -12px rgba(10,31,61,.35); }
+  figcaption { margin-top:.5rem; font-size:.95rem; }
+  figcaption strong { color:var(--navy); }
+  .db { background:#f6f8fb; border-left:4px solid var(--gold); padding:.6rem .8rem; font-family: ui-monospace, Menlo, monospace; font-size:.85rem; white-space:pre-wrap; margin:.6rem 0 0; }
+  code { background:#f1ece1; padding:.05rem .3rem; border-radius:4px; }
+  footer { color:var(--muted); font-size:.85rem; text-align:center; padding:1rem 0 2rem; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Campus Customs: App Check</h1>
+  <p>Problem 11 · Live-site testing of the React + FastAPI + Pydantic AI shop · Tested 2026-10-07 on <code>localhost:5173</code> (frontend) and <code>localhost:8000</code> (backend), as a guest shopper, 1280×800 viewport.</p>
+</header>
+<main>
+  <table class="summary">
+    <tr><th>#</th><th>Check</th><th>What we did</th><th>Result</th></tr>
+    <tr><td>1</td><td>Chat checks inventory (honest stock and price)</td><td>Asked about the Crew Left Chest Hoodie in M and XL, and its price</td><td class="pass">PASS: matches DB</td></tr>
+    <tr><td>2</td><td>Dynamic search-result cards after a category question</td><td>Asked "What hoodies do you have?"</td><td class="pass">PASS: 8 cards appear on page</td></tr>
+    <tr><td>3</td><td>Problem 9 usability feature</td><td>Products search + category + "in stock in size" filter (plus bonus: card-number redaction)</td><td class="pass">PASS</td></tr>
+  </table>
+
+  <section class="check" id="check-1">
+    <h2>1. Chat checks the inventory level of an item</h2>
+    <p class="meta">Page: <code>/products/crew-left-chest-hoodie</code> · Question typed in chat: "Is this hoodie in stock in medium? How many are left in XL, and what does it cost?"</p>
+    <figure>
+      <img src="app_check_images/inventory_chat.jpg" alt="Chat answering that the Crew Left Chest Hoodie is sold out in M, has 20 left in XL, and costs $68.00" />
+      <figcaption><strong>Proves:</strong> the agent used its stock and price tools. It says <em>sold out in M</em>, <em>20 left in XL</em>, and <em>$68.00</em>, which match the database exactly. It also understood "this hoodie" from the page the shopper was on.</figcaption>
+    </figure>
+    <figure>
+      <img src="app_check_images/inventory_page.jpg" alt="Product page size grid showing M sold out and XXL only 5 left" />
+      <figcaption><strong>Cross-check:</strong> the same item's page, built from the same DB, shows M crossed out as sold out, XXL "Only 5 left", and $68.00, consistent with the chat answer.</figcaption>
+    </figure>
+    <p class="db">DB (campus_customs.db): catalogue.price = 68.0
+inventory: XS=20, S=12, M=0, L=8, XL=20, XXL=5</p>
+  </section>
+
+  <section class="check" id="check-2">
+    <h2>2. Search-result cards appear after a category question</h2>
+    <p class="meta">Page: <code>/products</code> · Question typed in chat: "What hoodies do you have?"</p>
+    <figure>
+      <img src="app_check_images/search_cards.jpg" alt="A 'Hoodies' results panel with product cards appears on the page while the chat says 8 of 27 hoodies, $45 to $88" />
+      <figcaption><strong>Proves:</strong> the agent's structured result (<code>matches</code>: title, total, products) made a <strong>"Hoodies"</strong> panel of product cards (image, name, price, short description) appear on the page. The chat honestly says "8 of our 27 hoodies, $45.00–$88.00", and the panel reads "Showing 8 of 27 matches". Each card opens the full single-item page.</figcaption>
+    </figure>
+    <p class="db">DB: 27 catalogue rows with "hood" in garment_type, price range 45.0 – 88.0</p>
+  </section>
+
+  <section class="check" id="check-3">
+    <h2>3. Usability feature from Problem 9: shop search, category, and "in stock in my size" filters</h2>
+    <p class="meta">Page: <code>/products?q=bulldog&amp;cat=hoodie&amp;size=XL&amp;sort=price-asc</code> · Typed "bulldog", clicked Hoodies, chose size XL, sorted low to high.</p>
+    <figure>
+      <img src="app_check_images/usability_filters.jpg" alt="Products page filtered to 2 bulldog hoodies in stock in XL, with an 'Only 2 left in XL' badge" />
+      <figcaption><strong>Proves:</strong> 102 items narrow to the <strong>2 bulldog hoodies in stock in XL</strong> in a few clicks ("Showing 2 of 102 items"). The size-aware badge warns "Only 2 left in XL" (DB: XL = 2). The filters are saved in the URL, so the view can be shared.</figcaption>
+    </figure>
+    <h3>Bonus: chat safety redaction (Problem 9, improvement #4)</h3>
+    <figure>
+      <img src="app_check_images/usability_redaction.jpg" alt="Chat bubble shows the card number replaced with [card number removed] and the assistant warns not to share card details" />
+      <figcaption><strong>Proves:</strong> when the shopper typed a card number, the server replaced it with <code>[card number removed]</code> before it reached the AI model or the database. The assistant reminded them not to share card details and that checkout isn't available in chat.</figcaption>
+    </figure>
+  </section>
+</main>
+<footer>Campus Customs · HW4 · Screenshots captured from the running app (Vite dev server + uvicorn). Images are in <code>app_check_images/</code>.</footer>
+</body>
+</html>
