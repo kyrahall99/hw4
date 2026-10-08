@@ -295,3 +295,9 @@ And check to make sure this is the file layout:
 ```text
 Create my username "kyrahall99" and push to GitHub
 ```
+
+**Prompt 3**
+
+```text
+I just created it. Push to GitHub
+```
